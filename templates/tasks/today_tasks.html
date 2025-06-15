@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+
+{% block title %}Today's Tasks{% endblock %}
+
+{% block content %}
+  <h1 class="mb-4">Tasks for Today</h1>
+  <a href="{% url 'task-list' %}" class="btn btn-secondary mb-3">Back to All Tasks</a>
+
+  {% if tasks %}
+    <table class="table table-bordered">
+      <thead class="thead-dark">
+        <tr>
+          <th>Title</th>
+          <th>Description</th>
+          <th>Due Date</th>
+          <th>Priority</th>
+          <th>Status</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for task in tasks %}
+        <tr>
+          <td>{{ task.title }}</td>
+          <td>{{ task.description|default:"-" }}</td>
+          <td>{{ task.due_date|default:"No due date" }}</td>
+          <td>{{ task.get_priority_display }}</td>
+          <td>
+            {% if task.complete %}
+              ✅ Completed
+            {% else %}
+              ❌ Incomplete
+            {% endif %}
+          </td>
+          <td>
+            <a href="{% url 'task-update' task.id %}" class="btn btn-sm btn-warning">Edit</a>
+            <a href="{% url 'task-delete' task.id %}" class="btn btn-sm btn-danger">Delete</a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <p>No tasks due today.</p>
+  {% endif %}
+{% endblock %}

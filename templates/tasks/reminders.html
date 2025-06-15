@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+{% block title %}Reminders{% endblock %}
+
+{% block content %}
+<h2>🔔 Reminders for Today</h2>
+
+{% if reminders %}
+  <ul class="list-group">
+    {% for task in reminders %}
+      <li class="list-group-item d-flex justify-content-between align-items-center">
+        <div>
+          <strong>{{ task.title }}</strong> - {{ task.description|default:"No description" }}
+        </div>
+        <span class="badge bg-primary">
+          {{ task.get_recur_frequency_display }}
+        </span>
+      </li>
+    {% endfor %}
+  </ul>
+{% else %}
+  <p>No reminders for today.</p>
+{% endif %}
+{% endblock %}

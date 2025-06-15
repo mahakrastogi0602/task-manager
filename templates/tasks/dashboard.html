@@ -1,0 +1,102 @@
+
+{% extends 'base.html' %}
+
+{% load static %}
+{% load custom_filters %}
+
+{% block title %}Task Dashboard{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+  <h2 class="mb-4 text-center">📊 Task Analytics Dashboard</h2>
+
+  <div class="row g-4">
+    <div class="col-md-6">
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <h5 class="card-title">✅ Task Completion Status</h5>
+          <canvas id="statusChart"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-6">
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <h5 class="card-title">🔁 Recurrence Frequency</h5>
+          <canvas id="frequencyChart"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-6">
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <h5 class="card-title">⚡ Priority Distribution</h5>
+          <canvas id="priorityChart"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Chart.js CDN -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+  // Completion Status Chart
+  const statusCtx = document.getElementById('statusChart');
+  new Chart(statusCtx, {
+    type: 'doughnut',
+    data: {
+      labels: ['Incomplete', 'Completed'],
+      datasets: [{
+        label: 'Tasks',
+        data: [
+          {{ status_data|get_item:False|default:0 }},
+          {{ status_data|get_item:True|default:0 }}
+        ],
+        backgroundColor: ['#f44336', '#4caf50'],
+      }]
+    }
+  });
+
+  // Recurrence Frequency Chart
+  const freqCtx = document.getElementById('frequencyChart');
+  new Chart(freqCtx, {
+    type: 'bar',
+    data: {
+      labels: ['None', 'Daily', 'Weekly', 'Monthly', 'Yearly'],
+      datasets: [{
+        label: 'Tasks',
+        data: [
+          {{ freq_data|get_item:"N"|default:0 }},
+          {{ freq_data|get_item:"D"|default:0 }},
+          {{ freq_data|get_item:"W"|default:0 }},
+          {{ freq_data|get_item:"M"|default:0 }},
+          {{ freq_data|get_item:"Y"|default:0 }}
+        ],
+        backgroundColor: '#2196f3'
+      }]
+    }
+  });
+
+  // Priority Chart
+  const priorityCtx = document.getElementById('priorityChart');
+  new Chart(priorityCtx, {
+    type: 'pie',
+    data: {
+      labels: ['Low', 'Medium', 'High'],
+      datasets: [{
+        label: 'Tasks',
+        data: [
+  {{ priority_data|get_item:"H"|default:0 }},
+  {{ priority_data|get_item:"M"|default:0 }},
+  {{ priority_data|get_item:"L"|default:0 }}
+],
+        backgroundColor: ['#8bc34a', '#ffc107', '#f44336']
+      }]
+    }
+  });
+</script>
+{% endblock %}

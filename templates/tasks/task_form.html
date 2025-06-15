@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+
+{% block title %}Add Task{% endblock %}
+
+{% block content %}
+<h2>Add New Task</h2>
+
+<form method="POST" class="mb-4">
+  {% csrf_token %}
+  
+  <div class="mb-3">
+    {{ form.title.label_tag }} {{ form.title }}
+  </div>
+  
+  <div class="mb-3">
+    {{ form.description.label_tag }} {{ form.description }}
+  </div>
+
+  <div class="mb-3">
+    {{ form.complete.label_tag }} {{ form.complete }}
+  </div>
+
+  <div class="mb-3">
+    {{ form.due_date.label_tag }} {{ form.due_date }}
+  </div>
+
+  <div class="mb-3">
+    {{ form.priority.label_tag }} {{ form.priority }}
+  </div>
+
+  <div class="mb-3">
+    {{ form.task_list.label_tag }} {{ form.task_list }}<br>
+  </div>
+
+  <div class="mb-3">
+    {{ form.recur_frequency.label_tag }} {{ form.recur_frequency }}<br>
+  </div>
+
+  <button type="submit" class="btn btn-success">Save Task</button>
+</form>
+
+{% endblock %}

@@ -1,0 +1,105 @@
+{% extends 'base.html' %}
+
+{% block title %}Your Tasks{% endblock %}
+
+{% block content %}
+<div class="container">
+  <h1 class="mb-4">Your Tasks</h1>
+  <a href="{% url 'task-create' %}" class="btn btn-primary mb-3">Add Task</a>
+  <a href="{% url 'today-tasks' %}" class="btn btn-outline-info mb-3">Today’s Tasks</a>
+  <a href="{% url 'task-dashboard' %}" class="btn btn-outline-dark mb-3">📊 Dashboard</a>
+  <a class="nav-link text-white fw-semibold" href="{% url 'task-reminders' %}">
+    <i class="bi bi-bell me-1"></i> Reminders
+  </a>
+
+  <form method="get" class="d-flex flex-wrap gap-2 mb-4">
+    <select name="sort" class="form-select w-auto">
+      <option value="">-- Sort By --</option>
+      <option value="due_asc">Due Date ↑</option>
+      <option value="due_desc">Due Date ↓</option>
+      <option value="priority">Priority</option>
+      <option value="frequency">Recurrence Frequency</option>
+    </select>
+
+    <select name="status" class="form-select w-auto">
+      <option value="">-- Filter Status --</option>
+      <option value="completed">Completed</option>
+      <option value="incomplete">Incomplete</option>
+    </select>
+
+    <select name="recur" class="form-select w-auto">
+      <option value="">-- Filter by Frequency --</option>
+      <option value="D">Daily</option>
+      <option value="W">Weekly</option>
+      <option value="M">Monthly</option>
+      <option value="Y">Yearly</option>
+      <option value="N">No Recurrence</option>
+    </select>
+
+    <button class="btn btn-outline-secondary">Apply</button>
+  </form>
+
+  <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+    {% for task in tasks %}
+      <div class="col">
+        <div class="card h-100 shadow-sm {% if task.complete %}border-success{% endif %}">
+          <div class="card-body">
+            <h5 class="card-title">
+              {{ task.title }}
+              {% if task.recur_frequency != 'N' %}
+                <span class="badge bg-info text-dark">🔁 {{ task.get_recur_frequency_display }}</span>
+              {% endif %}
+            </h5>
+
+            {% if task.description %}
+              <p class="card-text">
+                <a class="btn btn-sm btn-outline-secondary" data-bs-toggle="collapse" href="#desc-{{ task.id }}" role="button" aria-expanded="false" aria-controls="desc-{{ task.id }}">
+                  Show Description
+                </a>
+              </p>
+              <div class="collapse" id="desc-{{ task.id }}">
+                <div class="card card-body">
+                  {{ task.description }}
+                </div>
+              </div>
+            {% else %}
+              <p class="text-muted"><i class="bi bi-file-text"></i> No description</p>
+            {% endif %}
+
+            <p class="mb-1">
+              <i class="bi bi-calendar-plus"></i> <strong>Created:</strong> {{ task.created|date:"M d, Y" }}
+            </p>
+
+            <p class="mb-1">
+              <i class="bi bi-calendar-day"></i> <strong>Due:</strong> {{ task.due_date|default:"No due date" }}
+            </p>
+
+            <p class="mb-1">
+              <i class="bi bi-exclamation-circle-fill text-warning"></i> <strong>Priority:</strong> {{ task.get_priority_display }}
+            </p>
+
+            <p class="mb-1">
+              <i class="bi bi-check-circle-fill {% if task.complete %}text-success{% else %}text-muted{% endif %}"></i>
+              <strong>Status:</strong>
+              {% if task.complete %}
+                ✅ Completed
+              {% else %}
+                ❌ Incomplete
+              {% endif %}
+            </p>
+          </div>
+
+          <div class="card-footer bg-transparent d-flex justify-content-between">
+            <a href="{% url 'task-update' task.id %}" class="btn btn-sm btn-warning">✏️ Edit</a>
+            <a href="{% url 'task-delete' task.id %}" class="btn btn-sm btn-danger">🗑 Delete</a>
+          </div>
+        </div>
+      </div>
+    {% empty %}
+      <div class="col">
+        <div class="alert alert-info w-100 text-center">No tasks found.</div>
+      </div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

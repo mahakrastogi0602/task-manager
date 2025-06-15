@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Your Task Lists</h2>
+<ul>
+  {% for list in lists %}
+    <li><a href="{% url 'tasks-by-list' list.id %}">{{ list.name }}</a></li>
+  {% endfor %}
+</ul>
+<a href="{% url 'tasklist-create' %}" class="btn btn-primary mt-2">+ New List</a>
+{% endblock %}
