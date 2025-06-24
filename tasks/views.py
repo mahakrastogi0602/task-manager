@@ -13,6 +13,10 @@ from django.utils.timezone import now
 from django.db.models import Count
 from django.views.generic.edit import CreateView
 from django.urls import reverse_lazy
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+import csv
+from django.http import HttpResponse
 # Create your views here.
 @login_required
 def task_list(request):
@@ -173,7 +177,25 @@ def task_reminders(request):
     return render(request, 'tasks/reminders.html', {'reminders': reminders})
 
 def task_dashboard(request):
+
+    
     tasks = Task.objects.filter(user=request.user)
+
+    filter_type = request.GET.get('filter')
+    today = date.today()
+    start_of_week = today - timedelta(days=today.weekday())
+    end_of_week = start_of_week + timedelta(days=6)
+
+    if filter_type == 'week':
+        tasks = tasks.filter(due_date__range=[start_of_week, end_of_week])
+    elif filter_type == 'completed':
+        tasks = tasks.filter(complete=True)
+    elif filter_type == 'incomplete':
+        tasks = tasks.filter(complete=False)
+    
+    status_data = tasks.values('complete').annotate(count=Count('id'))
+    freq_data = tasks.values('recur_frequency').annotate(count=Count('id'))
+    priority_data = tasks.values('priority').annotate(count=Count('id'))
 
     # Completion Status
     status_data = tasks.values('complete').annotate(count=Count('id'))
@@ -188,6 +210,7 @@ def task_dashboard(request):
         'status_data': status_data,
         'freq_data': freq_data,
         'priority_data': priority_data,
+        'filter_type': filter_type, 
     })
 
 def task_list_view(request):
@@ -207,3 +230,73 @@ class TaskListCreateView(CreateView):
     def form_valid(self, form):
         form.instance.user = self.request.user
         return super().form_valid(form)
+
+def calendar_view(request):
+    return render(request, 'tasks/calendar.html')
+
+@csrf_exempt
+def task_events(request):
+    tasks = Task.objects.filter(user=request.user).exclude(due_date__isnull=True)
+    events = []
+    for task in tasks:
+        if task.due_date:
+            events.append({
+                'title': task.title,
+                'start': task.due_date.isoformat(),
+                'color': '#28a745' if task.complete else '#ffc107'
+            })
+    return JsonResponse(events, safe=False)
+
+def export_tasks_csv(request):
+    tasks = Task.objects.filter(user=request.user)
+    
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="tasks.csv"'
+
+    writer = csv.writer(response)
+    writer.writerow(['Title', 'Description', 'Due Date', 'Priority', 'Complete', 'Recurrence'])
+
+    for task in tasks:
+        writer.writerow([
+            task.title,
+            task.description,
+            task.due_date,
+            task.get_priority_display(),
+            'Yes' if task.complete else 'No',
+            task.get_recur_frequency_display(),
+        ])
+
+    return response
+
+from reportlab.pdfgen import canvas
+from reportlab.lib.pagesizes import letter
+
+def export_tasks_pdf(request):
+    tasks = Task.objects.filter(user=request.user)
+
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = 'attachment; filename="tasks.pdf"'
+
+    p = canvas.Canvas(response, pagesize=letter)
+    width, height = letter
+
+    y = height - 50
+    p.setFont("Helvetica-Bold", 16)
+    p.drawString(50, y, "Your Tasks")
+    p.setFont("Helvetica", 12)
+
+    y -= 30
+
+    for task in tasks:
+        if y < 50:
+            p.showPage()
+            y = height - 50
+            p.setFont("Helvetica", 12)
+
+        p.drawString(50, y, f"• {task.title} | Due: {task.due_date or 'N/A'} | "
+                            f"Priority: {task.get_priority_display()} | "
+                            f"Status: {'✅' if task.complete else '❌'}")
+        y -= 20
+
+    p.save()
+    return response

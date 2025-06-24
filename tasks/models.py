@@ -27,6 +27,7 @@ class Task(models.Model):
     due_date = models.DateField(null=True, blank=True)
     priority = models.CharField(max_length=1, choices=PRIORITY_CHOICES, default='M')
     task_list = models.ForeignKey(TaskList, on_delete=models.CASCADE, null=True, blank=True)
+    
 
     RECUR_FREQUENCY_CHOICES = [
         ('N', 'None'),

@@ -4,80 +4,119 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>{% block title %}Task Manager{% endblock %}</title>
-  <!-- Bootstrap CSS CDN -->
-   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
-<style>
-  body.dark-mode {
-    background-color: #121212;
-    color: #e0e0e0;
-  }
-  .dark-mode .card, .dark-mode .table, .dark-mode .form-control, .dark-mode .btn {
-    background-color: #1e1e1e;
-    color: #e0e0e0;
-  }
-  .card {
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-  }
 
-  .card:hover {
-    transform: scale(1.03);
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
-    z-index: 10;
-  }
-</style>
+  <!-- Bootstrap CSS & Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet" />
+
+  <style>
+    body {
+  transition: background-color 0.3s ease, color 0.3s ease;
+  background-color: #ffffff;
+  color: #000000;
+}
+
+body.dark-mode {
+  background-color: #121212;
+  color: #e0e0e0;
+}
+    .dark-mode .card,
+    .dark-mode .table,
+    .dark-mode .form-control,
+    .dark-mode .btn {
+      background-color: #1e1e1e;
+      color: #e0e0e0;
+    }
+    .card {
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .card:hover {
+      transform: scale(1.03);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+      z-index: 10;
+    }
+  </style>
 </head>
 <body>
 
- <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm">
-  <div class="container-fluid">
-    <a class="navbar-brand fw-bold fs-4" href="{% url 'task-list' %}">
-      📝 Task Manager
-    </a>
+  <!-- Responsive Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm">
+    <div class="container-fluid">
+      <a class="navbar-brand fw-bold fs-4" href="{% url 'task-list' %}">📝 Task Manager</a>
 
-    <div class="ms-auto d-flex align-items-center gap-3">
-      <a class="nav-link text-white fw-semibold" href="{% url 'task-lists' %}"><i class="bi bi-list-task me-1"></i> Task Lists</a>
-      <a class="nav-link text-white fw-semibold" href="{% url 'today-tasks' %}"><i class="bi bi-calendar-day me-1"></i> Today’s Tasks</a>
-      <a class="nav-link text-white fw-semibold" href="{% url 'task-reminders' %}">🔔 Reminders</a>
-     
+      <!-- Toggle for Mobile -->
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse justify-content-between" id="navbarNav">
+        <!-- Left Nav Links -->
+        <ul class="navbar-nav gap-2">
+          <li class="nav-item">
+            <a class="nav-link text-white fw-semibold" href="{% url 'task-lists' %}">
+              <i class="bi bi-list-task me-1"></i> Task Lists
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link text-white fw-semibold" href="{% url 'today-tasks' %}">
+              <i class="bi bi-calendar-day me-1"></i> Today’s Tasks
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link text-white fw-semibold" href="{% url 'task-calendar' %}">
+              🗓 Calendar View
+            </a>
+          </li>
+        </ul>
+
+        <!-- Right Nav Controls -->
+        <div class="d-flex align-items-center gap-3">
+          {% if user.is_authenticated %}
+            <span class="badge bg-light text-primary fw-bold px-3 py-2">
+              👋 Hello, {{ user.username }}
+            </span>
+            <a class="btn btn-outline-light btn-sm" href="{% url 'logout' %}">Logout</a>
+          {% else %}
+            <a class="btn btn-outline-light btn-sm" href="{% url 'login' %}">Login</a>
+            <a class="btn btn-light btn-sm" href="{% url 'register' %}">Register</a>
+          {% endif %}
+         <button id="themeToggleBtn" class="btn btn-light btn-sm" onclick="toggleTheme()">
+  <i class="bi" id="themeIcon"></i> <span id="themeLabel">Theme</span>
+</button>
 
 
-
-      {% if user.is_authenticated %}
-        <span class="badge bg-light text-primary fw-bold px-3 py-2">
-          👋 Hello, {{ user.username }}
-        </span>
-        <a class="btn btn-outline-light btn-sm" href="{% url 'logout' %}">Logout</a>
-      {% else %}
-        <a class="btn btn-outline-light btn-sm" href="{% url 'login' %}">Login</a>
-        <a class="btn btn-light btn-sm" href="{% url 'register' %}">Register</a>
-      {% endif %}
+      </div>
     </div>
-  </div>
-  <button class="btn btn-light btn-sm ms-3" onclick="toggleTheme()">🌓 Toggle Theme</button>
-
-</nav>
-
+  </nav>
 
   <div class="container mt-4">
     {% block content %}
-    <!-- Page content will go here -->
+    <!-- Page-specific content goes here -->
     {% endblock %}
   </div>
 
-  <!-- Bootstrap JS Bundle CDN -->
+  <!-- Bootstrap Bundle JS -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-  <script>
+
+  <!-- Theme Toggle Script -->
+ <script>
+  function updateThemeButton() {
+    const isDark = document.body.classList.contains('dark-mode');
+    document.getElementById('themeIcon').className = isDark ? 'bi bi-moon-fill' : 'bi bi-brightness-high-fill';
+    document.getElementById('themeLabel').textContent = isDark ? 'Dark Mode' : 'Light Mode';
+  }
+
   function toggleTheme() {
     document.body.classList.toggle('dark-mode');
     localStorage.setItem('theme', document.body.classList.contains('dark-mode') ? 'dark' : 'light');
+    updateThemeButton();
   }
 
-  // Load saved theme
   document.addEventListener('DOMContentLoaded', () => {
     if (localStorage.getItem('theme') === 'dark') {
       document.body.classList.add('dark-mode');
     }
+    updateThemeButton();
   });
 </script>
 

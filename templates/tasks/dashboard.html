@@ -8,6 +8,12 @@
 
 {% block content %}
 <div class="container mt-4">
+  <div class="btn-group mb-4" role="group">
+  <a href="?filter=week" class="btn btn-outline-primary {% if filter_type == 'week' %}active{% endif %}">🗓 This Week</a>
+  <a href="?filter=completed" class="btn btn-outline-success {% if filter_type == 'completed' %}active{% endif %}">✅ Completed</a>
+  <a href="?filter=incomplete" class="btn btn-outline-danger {% if filter_type == 'incomplete' %}active{% endif %}">❌ Incomplete</a>
+  <a href="{% url 'task-dashboard' %}" class="btn btn-outline-secondary {% if not filter_type %}active{% endif %}">🔄 All Tasks</a>
+</div>
   <h2 class="mb-4 text-center">📊 Task Analytics Dashboard</h2>
 
   <div class="row g-4">

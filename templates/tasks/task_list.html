@@ -4,14 +4,27 @@
 
 {% block content %}
 <div class="container">
-  <h1 class="mb-4">Your Tasks</h1>
-  <a href="{% url 'task-create' %}" class="btn btn-primary mb-3">Add Task</a>
-  <a href="{% url 'today-tasks' %}" class="btn btn-outline-info mb-3">Today’s Tasks</a>
-  <a href="{% url 'task-dashboard' %}" class="btn btn-outline-dark mb-3">📊 Dashboard</a>
-  <a class="nav-link text-white fw-semibold" href="{% url 'task-reminders' %}">
-    <i class="bi bi-bell me-1"></i> Reminders
-  </a>
+ <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-4">
+  <div class="d-flex flex-wrap gap-2">
+    <a href="{% url 'task-create' %}" class="btn btn-primary">Add Task</a>
+    <a href="{% url 'today-tasks' %}" class="btn btn-outline-info">Today’s Tasks</a>
+    <a href="{% url 'task-dashboard' %}" class="btn btn-outline-dark">📊 Dashboard</a>
+    <a href="{% url 'task-reminders' %}" class="btn btn-outline-warning">🔔 Reminders</a>
+  </div>
 
+  <div class="dropdown">
+    <button class="btn btn-outline-success dropdown-toggle" type="button" data-bs-toggle="dropdown">
+      📁 Export Tasks
+    </button>
+    <ul class="dropdown-menu">
+      <li><a class="dropdown-item" href="{% url 'export-csv' %}">📤 Export as CSV</a></li>
+      <li><a class="dropdown-item" href="{% url 'export-pdf' %}">🖨 Export as PDF</a></li>
+    </ul>
+  </div>
+</div>
+
+
+</div>
   <form method="get" class="d-flex flex-wrap gap-2 mb-4">
     <select name="sort" class="form-select w-auto">
       <option value="">-- Sort By --</option>

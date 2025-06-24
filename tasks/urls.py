@@ -20,6 +20,15 @@ urlpatterns = [
     path('dashboard/', views.task_dashboard, name='task-dashboard'),
     path('', views.task_list_view, name='task-list'),
     path('lists/create/', TaskListCreateView.as_view(), name='create-tasklist'),
+    path('calendar/', views.calendar_view, name='task-calendar'),
+    path('calendar/events/', views.task_events, name='task-events'),
+    path('export/csv/', views.export_tasks_csv, name='export-csv'),
+    path('export/pdf/', views.export_tasks_pdf, name='export-pdf'),
+
+
+
+
+
 
 
 
