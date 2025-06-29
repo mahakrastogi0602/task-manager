@@ -141,6 +141,3 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 if 'DATABASE_URL' in os.environ:
     DATABASES['default'] = dj_database_url.config(conn_max_age=600, ssl_require=True)
 
-import sys
-if sys.version_info >= (3, 13):
-    sys.modules['cgi'] = type(sys)('cgi')  # Fake CGI module
