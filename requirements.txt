@@ -1,7 +1,8 @@
 asgiref==3.7.2
 charset-normalizer==3.4.2
 Django==3.2.25
-Pillow==9.5.0
+# Pillow==9.5.0
+Pillow==9.4.0
 pytz==2025.2
 reportlab==4.4.2
 sqlparse==0.4.4
