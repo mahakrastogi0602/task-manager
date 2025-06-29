@@ -8,6 +8,8 @@ pytz==2025.2
 reportlab==4.4.2
 sqlparse==0.4.4
 typing_extensions==4.7.1
-gunicorn
+Django==3.2.25
+gunicorn==20.1.0  # Older stable version
+# gunicorn
 whitenoise
 dj_database_url==1.2.0
