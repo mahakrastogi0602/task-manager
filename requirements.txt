@@ -8,4 +8,4 @@ sqlparse==0.4.4
 typing_extensions==4.7.1
 gunicorn
 whitenoise
-dj-database-url
+dj_database_url==1.2.0
