@@ -1,3 +1,5 @@
+wheel
+setuptools
 asgiref==3.7.2
 charset-normalizer==3.4.2
 Django==3.2.25
@@ -14,5 +16,6 @@ gunicorn==23.0.0 # Older stable version
 whitenoise==6.5.0
 dj_database_url==1.2.0
 legacy-cgi==2.6.3
-psycopg2-binary==2.9.9
+psycopg2==2.9.9
+
 
